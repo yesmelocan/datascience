@@ -20,14 +20,25 @@ driver.quit()
 x = []
 
 
-try:
-    price_span = html.find('div',class_="container svelte-aay0dk")
-    price_span = price_span.find('fin-streamer', {'class': 'livePrice svelte-mgkamr'})
-    price = price_span.get('data-value')
-except:
-    price = np.nan
 
-x.append([price])
+try:
+    valuation_p = html.find("div",{'class':"container svelte-1n4vnw8"}).find_all("p","value svelte-1n4vnw8")
+    valuations = []
+    for i in valuation_p:
+        valuations.append(i.text)
+
+
+    
+    marketcap = valuations[0]
+    price_book = valuations[6]
+    ev_ebitda = valuations[8]
+    
+except:
+    marketcap = np.nan
+    price_book = np.nan  
+    ev_ebitda = np.nan
+
+x.append([marketcap, price_book,ev_ebitda])
 print(x)
 
 """
