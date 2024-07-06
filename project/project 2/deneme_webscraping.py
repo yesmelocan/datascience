@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup as bts
 
 
 
-url = "https://finance.yahoo.com/quote/MSFT/"
+url = "https://finance.yahoo.com/quote/MSFT/sustainability/"
 driver = webdriver.Chrome()
 driver.get(url)
 html = bts(driver.page_source, "html.parser")
@@ -19,28 +19,37 @@ driver.quit()
 
 x = []
 
+valuation_p = html.find_all("div",{'class':"scoreRank svelte-y3c2sq"}) #.find_all("h4","border svelte-y3c2sq")
+
+print(valuation_p)
+
+
+
+
 
 
 try:
-    valuation_p = html.find("div",{'class':"container svelte-1n4vnw8"}).find_all("p","value svelte-1n4vnw8")
+    valuation_p = html.find("div",{'class':"container svelte-1n4vnw8"}).find_all("h4","border svelte-y3c2sq")
     valuations = []
     for i in valuation_p:
         valuations.append(i.text)
-
-
-    
-    marketcap = valuations[0]
-    price_book = valuations[6]
-    ev_ebitda = valuations[8]
-    
+        print(valuations)
 except:
-    marketcap = np.nan
-    price_book = np.nan  
-    ev_ebitda = np.nan
+    print("lüzumu yok")
+"""    
+    esg_risk = valuations[0]
+    enviromental_risk = valuations[6]
+    social_risk = valuations[8]
+    governance_risk =  
+except:
+    esg_risk = np.nan
+    enviromental_risk = np.nan  
+    social_risk = np.nan
 
-x.append([marketcap, price_book,ev_ebitda])
+x.append([esg_risk, enviromental_risk,social_risk])
 print(x)
-
+df = pd.DataFrame.from_records(result, columns=df_columns)
+"""
 """
 
 def getAndParseURL(url):
