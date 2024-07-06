@@ -8,25 +8,34 @@ import urllib.request
 import http.client
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-
+import time
 import requests
 from bs4 import BeautifulSoup as bts
+from bs4.element import Tag
 
+excel = pd.read_excel("sp500.xlsx",sheet_name ="Sayfa1")
 
-"""
-
-def getAndParseURL(url):
-    result = requests.get(url, headers={"User-Agent": "Chrome/125.0.6422.142"})
-    soup = bts(result.text, "html.parser")
+def get_html_soup(url):
+    driver = webdriver.Chrome()
+    driver.get(url)
+    soup = bts(driver.page_source, "html.parser")
+    driver.quit()
     return soup
-"""
 
-url = "https://finance.yahoo.com/quote/MSFT/"
-driver = webdriver.Chrome()
-driver.get(url)
-html = bts(driver.page_source, "html.parser")
-driver.quit()
- #html = getAndParseURL(html)
+
+#url = "https://finance.yahoo.com/quote/MSFT/"
+#url_risk = "https://finance.yahoo.com/quote/MSFT/sustainability/"
+
+links = []
+for symbol in excel["Symbol"]:
+    links.append("https://finance.yahoo.com/quote/" +symbol + "/")
+
+
+html = get_html_soup(url)
+html_risk = get_html_soup(url + "sustainability")
+
+
+
 
 x = []
 
@@ -73,10 +82,31 @@ except:
     price_book = np.nan  
     ev_ebitda = np.nan
 
-x.append([name,code,price,revenue,margin,marketcap,price_book,ev_ebitda])
+try:
+    valuation_p = html.find_all("div", {'class': "scoreRank svelte-y3c2sq"})
+    values = []
+    for val in valuation_p:
+        h4_tag = val.find("h4")
+        if h4_tag and isinstance(h4_tag, Tag):
+            values.append(h4_tag.text.strip())
+    environment_score = values[1]
+    social_score = values[2]
+    governance_score = values[3]
+except:
+    environment_score = np.nan
+    social_score = np.nan
+    governance_score = np.nan
+
+
+df_columns = ["stock_name","stock_code","price","revunue","profit margin","market cap","price/book","Enterprise Value/EBITDA"
+,"Environmental Risk Score","Social Risk Score","Governance Risk Score"]
+x.append([name,code,price,revenue,margin,marketcap,price_book,ev_ebitda,environment_score,social_score,governance_score])
 print(x)
 
 
+df = pd.DataFrame.from_records(x, columns=df_columns)
+
+time.sleep(random.uniform(5,10))
 
 """
 target_div = html.find('div', class_='container svelte-mgkamr')
