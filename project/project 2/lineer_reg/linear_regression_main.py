@@ -53,7 +53,7 @@ X = X.dropna()
 
 # Hedef değişkenin de sayısal olduğundan emin olun
 y = y.loc[X.index]
-
+print(X,y)
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -109,6 +109,7 @@ pred = lreg2.predict(x_cv_ss)
 
 # R2 Skor
 print("R2 Score:", r2_score(y_cv, pred))
+print("Validation Score:", r2_score(y_cv, pred))
 print("Validation Score:", r2_score(y_cv, pred))
 # R2 Skor
 #print("R2 Score:", r2_score(y_train, pred))
